@@ -2,16 +2,16 @@ import { useState } from 'react';
 import {
   GptMessage,
   MyMessage,
-  TextMessageBoxSelect,
+  TextMessageBox,
   TypingLoader,
-} from '../../components';
+} from '../components';
 
 type Message = {
   text: string;
   isGpt: boolean;
 };
 
-export const OrthographyPage = () => {
+export const ChatTemplate = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
 
@@ -28,14 +28,11 @@ export const OrthographyPage = () => {
       <div className='chat-messages'>
         <div className='grid grid-cols-12 gap-y-2'>
           <GptMessage text='Hola, puedes escribir tu texto en español y te ayudo con las correcciones' />
-          {messages.map((message, index) =>
+          {messages.map((message) =>
             message.isGpt ? (
-              <GptMessage
-                key={`${message.text}-${index}`}
-                text='Esto es de OpenAI'
-              />
+              <GptMessage key={message.text} text='Esto es de OpenAi' />
             ) : (
-              <MyMessage key={`${message.text}-${index}`} text={message.text} />
+              <MyMessage key={message.text} text={message.text} />
             )
           )}
 
@@ -47,23 +44,10 @@ export const OrthographyPage = () => {
         </div>
       </div>
 
-      {/* <TextMessageBox
+      <TextMessageBox
         onSendMessage={handlePost}
         placeholder='Escribe aquí lo que deseas'
         disableCorrections
-      /> */}
-
-      {/* <TextMessageBoxFile
-        onSendMessage={handlePost}
-        placeholder='Escribe aquí lo que deseas'
-      /> */}
-
-      <TextMessageBoxSelect
-        onSendMessage={handlePost}
-        options={[
-          { id: '1', text: 'Hola' },
-          { id: '2', text: 'Mundo' },
-        ]}
       />
     </div>
   );
