@@ -20,7 +20,21 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
+
+    /* Paths */
+    "baseUrl": ".",
+    "paths": {
+      "@core/*": ["src/gpt/core/*"],
+      "@orthography": ["src/gpt/orthography/index"],
+      "@assistant": ["src/gpt/assistant/index"],
+      "@audio-to-text": ["src/gpt/audio-to-text/index"],
+      "@image-generation": ["src/gpt/image-generation/index"],
+      "@pros-cons": ["src/gpt/pros-cons/index"],
+      "@pros-cons-stream": ["src/gpt/pros-cons-stream/index"],
+      "@text-to-audio": ["src/gpt/text-to-audio/index"],
+      "@translate": ["src/gpt/translate/index"]
+    }
   },
   "include": ["src"]
 }

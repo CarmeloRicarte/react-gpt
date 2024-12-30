@@ -1,16 +1,15 @@
+import { DashboardLayout } from '@core/infrastucture/layouts';
+
 import { createBrowserRouter, Navigate } from 'react-router-dom';
-import { DashboardLayout } from '../layouts/DashboardLayout';
-import {
-  AssistantPage,
-  AudioToTextPage,
-  ImageGenerationPage,
-  ImageTunningPage,
-  OrthographyPage,
-  ProsConsPage,
-  ProsConsStreamPage,
-  TextToAudioPage,
-  TranslatePage,
-} from '../pages';
+
+import { AssistantPage } from '@assistant';
+import { AudioToTextPage } from '@audio-to-text';
+import { ImageGenerationPage, ImageTunningPage } from '@image-generation';
+import { OrthographyPage } from '@orthography';
+import { ProsConsPage } from '@pros-cons';
+import { ProsConsStreamPage } from '@pros-cons-stream';
+import { TextToAudioPage } from '@text-to-audio';
+import { TranslatePage } from '@translate';
 
 export const menuRoutes = [
   {

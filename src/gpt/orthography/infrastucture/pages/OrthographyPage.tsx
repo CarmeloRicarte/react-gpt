@@ -1,14 +1,20 @@
-import { useState } from 'react';
 import {
   GptMessage,
   MyMessage,
-  TextMessageBoxSelect,
+  TextMessageBox,
   TypingLoader,
-} from '../../components';
+} from '@core/infrastucture/components';
+import { GptOrthographyMessage, orthographyUseCase } from '@orthography';
+import { useState } from 'react';
 
 type Message = {
   text: string;
   isGpt: boolean;
+  info?: {
+    userScore: number;
+    errors: string[];
+    message: string;
+  };
 };
 
 export const OrthographyPage = () => {
@@ -18,21 +24,32 @@ export const OrthographyPage = () => {
   const handlePost = async (text: string) => {
     setIsLoading(true);
     setMessages((prevMesages) => [...prevMesages, { text, isGpt: false }]);
-    // TODO: UseCase
-
+    const { ok, errors, message, userScore } = await orthographyUseCase(text);
+    if (ok) {
+      setMessages((prevMesages) => [
+        ...prevMesages,
+        { text: message, isGpt: true, info: { userScore, errors, message } },
+      ]);
+    } else {
+      setMessages((prevMesages) => [
+        ...prevMesages,
+        { text: 'No se pudo realizar la corrección', isGpt: true },
+      ]);
+    }
     setIsLoading(false);
-    // TODO: añadir el mensaje de isGpt en true
   };
+
   return (
     <div className='chat-container'>
       <div className='chat-messages'>
         <div className='grid grid-cols-12 gap-y-2'>
           <GptMessage text='Hola, puedes escribir tu texto en español y te ayudo con las correcciones' />
+
           {messages.map((message, index) =>
             message.isGpt ? (
-              <GptMessage
-                key={`${message.text}-${index}`}
-                text='Esto es de OpenAI'
+              <GptOrthographyMessage
+                key={`${message.info?.message}-${index}`}
+                {...message.info!}
               />
             ) : (
               <MyMessage key={`${message.text}-${index}`} text={message.text} />
@@ -47,23 +64,10 @@ export const OrthographyPage = () => {
         </div>
       </div>
 
-      {/* <TextMessageBox
+      <TextMessageBox
         onSendMessage={handlePost}
         placeholder='Escribe aquí lo que deseas'
         disableCorrections
-      /> */}
-
-      {/* <TextMessageBoxFile
-        onSendMessage={handlePost}
-        placeholder='Escribe aquí lo que deseas'
-      /> */}
-
-      <TextMessageBoxSelect
-        onSendMessage={handlePost}
-        options={[
-          { id: '1', text: 'Hola' },
-          { id: '2', text: 'Mundo' },
-        ]}
       />
     </div>
   );
