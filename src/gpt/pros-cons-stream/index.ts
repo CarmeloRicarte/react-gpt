@@ -1,2 +1,2 @@
+export * from './application';
 export * from './infrastucture';
-export * from './infrastucture/pages/ProsConsStreamPage';
