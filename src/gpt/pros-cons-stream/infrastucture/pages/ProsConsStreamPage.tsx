@@ -4,8 +4,8 @@ import {
   TextMessageBox,
   TypingLoader,
 } from '@core/index';
-import { useState } from 'react';
-import { prosConsDiscusserStreamUseCase } from '../../application';
+import { useRef, useState } from 'react';
+import { prosConsDiscusserStreamGeneratorUseCase } from '../../application';
 
 type Message = {
   text: string;
@@ -14,39 +14,39 @@ type Message = {
 
 export const ProsConsStreamPage = () => {
   const [isLoading, setIsLoading] = useState(false);
+  const isRequestRunning = useRef(false);
   const [messages, setMessages] = useState<Message[]>([]);
+  const abortController = useRef(new AbortController());
 
   const handlePost = async (text: string) => {
+    if (isRequestRunning.current) {
+      abortController.current.abort();
+      abortController.current = new AbortController();
+    }
     setIsLoading(true);
+    isRequestRunning.current = true;
     setMessages((prevMesages) => [...prevMesages, { text, isGpt: false }]);
-    const reader = await prosConsDiscusserStreamUseCase(text);
+    const stream = prosConsDiscusserStreamGeneratorUseCase(
+      text,
+      abortController.current.signal
+    );
     setIsLoading(false);
 
     // generate the last message
-    if (!reader) {
+    if (!stream) {
       return alert('No se pudo leer la respuesta');
     }
 
-    const decoder = new TextDecoder();
-    let message = '';
-    setMessages((prevMesages) => [
-      ...prevMesages,
-      { text: message, isGpt: true },
-    ]);
+    setMessages((prevMesages) => [...prevMesages, { text: '', isGpt: true }]);
 
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) {
-        break;
-      }
-      const decodedChunk = decoder.decode(value, { stream: true });
-      message += decodedChunk;
+    for await (const text of stream) {
       setMessages((prevMesages) => {
         const newMessages = [...prevMesages];
-        newMessages[prevMesages.length - 1].text = message;
+        newMessages[newMessages.length - 1].text = text;
         return newMessages;
       });
     }
+    isRequestRunning.current = false;
   };
 
   return (
